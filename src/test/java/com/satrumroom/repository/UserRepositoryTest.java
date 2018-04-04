@@ -1,6 +1,6 @@
 package com.satrumroom.repository;
 
-import com.satrumroom.BaseDomainTest;
+import com.satrumroom.BaseDomain;
 import com.satrumroom.domain.FileInfo;
 import com.satrumroom.domain.User;
 import org.junit.Test;
@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserRepositoryTest extends BaseDomainTest {
+public class UserRepositoryTest extends BaseDomain {
 
     @Autowired
     private UserRepository userRepository;
@@ -30,6 +31,14 @@ public class UserRepositoryTest extends BaseDomainTest {
 
         assertThat(userRepository.findByLogin("loginThree")).isNotNull();
         assertThat(userRepository.findAll()).hasSize(3);
+    }
+
+    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    public void createNotValidUser() {
+        userRepository.saveAndFlush(User.builder()
+                .login("loginThree")
+                .role("User3")
+                .build());
     }
 
     @Test
@@ -75,6 +84,40 @@ public class UserRepositoryTest extends BaseDomainTest {
         assertThat(userRepository.findByLogin("loginOne")).isNull();
         assertThat(fileInfoRepository.findAll()).hasSize(2);
         assertThat(userRepository.findAll()).hasSize(1);
+    }
+
+    @Test(expected = org.springframework.dao.EmptyResultDataAccessException.class)
+    public void deleteNotExistsUser(){
+        assertThat(userRepository.findAll()).hasSize(2);
+        userRepository.deleteById(111111L);
+        assertThat(userRepository.findAll()).hasSize(2);
+    }
+
+    @Test
+    public void findAllByRole() {
+        List<User> users = userRepository.findAllByRole("User");
+        assertThat(users).hasSize(2);
+    }
+
+    @Test
+    public void findByLogin() {
+        User user = userRepository.findByLogin("loginOne");
+        assertThat(user).isNotNull();
+        assertThat(user.getLogin()).isEqualTo("loginOne");
+    }
+
+    @Test
+    public void findById() {
+        long id = userRepository.findAll().get(0).getId();
+        User user = userRepository.getOne(id);
+        assertThat(user).isNotNull();
+        assertThat(user.getId()).isEqualTo(id);
+    }
+
+    @Test
+    public void findAll() {
+        List<User> users = userRepository.findAll();
+        assertThat(users).hasSize(2);
     }
 
 }
