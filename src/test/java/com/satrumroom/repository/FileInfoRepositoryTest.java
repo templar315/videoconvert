@@ -20,29 +20,6 @@ public class FileInfoRepositoryTest extends BaseDomainTest {
     @Autowired
     private FileInfoRepository fileInfoRepository;
 
-
-    public void start() {
-        User user = User.builder()
-                .login("loginThree")
-                .password("passThree")
-                .role("User3")
-                .build();
-
-        FileInfo fileInfo = FileInfo.builder()
-                .name("Title1")
-                .path("some/path/file.avi")
-                .lastChange(new Date())
-                .videoFormat("AVI")
-                .audioFormat("OGG")
-                .convertible(true)
-                .user(user)
-                .build();
-
-        user.setFilesInfo(new ArrayList<>(Arrays.asList(fileInfo)));
-
-        fileInfoRepository.saveAndFlush(fileInfo);
-    }
-
     @Test
     public void add() {
         User user = User.builder()
@@ -53,7 +30,7 @@ public class FileInfoRepositoryTest extends BaseDomainTest {
 
         FileInfo fileInfo = FileInfo.builder()
                 .name("Title1")
-                .path("some/path/file.avi")
+                .path("some/path/file5.avi")
                 .lastChange(new Date())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
@@ -91,7 +68,7 @@ public class FileInfoRepositoryTest extends BaseDomainTest {
 
         FileInfo fileInfo = FileInfo.builder()
                 .name("Title1")
-                .path("some/path/file.avi")
+                .path("some/path/file5.avi")
                 .lastChange(new Date())
                 .videoFormat("AVI")
                 .audioFormat("OGG")

@@ -42,7 +42,7 @@ public class UserRepositoryTest extends BaseDomainTest {
 
         FileInfo fileInfo = FileInfo.builder()
                 .name("Title1")
-                .path("some/path/file.avi")
+                .path("some/path/file5.avi")
                 .lastChange(new Date())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
