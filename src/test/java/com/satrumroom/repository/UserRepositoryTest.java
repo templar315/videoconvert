@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
+import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserRepositoryTest extends BaseDomainTest {
@@ -43,7 +43,7 @@ public class UserRepositoryTest extends BaseDomainTest {
         FileInfo fileInfo = FileInfo.builder()
                 .name("Title1")
                 .path("some/path/file5.avi")
-                .lastChange(new Date())
+                .lastChange(now())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
                 .convertible(true)

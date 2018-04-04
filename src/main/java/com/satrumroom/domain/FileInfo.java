@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "file_info")
@@ -29,7 +29,7 @@ public class FileInfo implements Serializable {
     private String path;
 
     @Column(name = "last_change", nullable = false)
-    private Date lastChange;
+    private LocalDateTime lastChange;
 
     @Column(name = "video_format")
     private String videoFormat;

@@ -11,7 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+
+import static java.time.LocalDateTime.now;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -38,7 +39,7 @@ public class BaseDomainTest {
         FileInfo fileInfo1 = FileInfo.builder()
                 .name("Title1")
                 .path("some/path/file.avi")
-                .lastChange(new Date())
+                .lastChange(now())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
                 .convertible(true)
@@ -48,7 +49,7 @@ public class BaseDomainTest {
         FileInfo fileInfo2 = FileInfo.builder()
                 .name("Title2")
                 .path("some/path/file2.avi")
-                .lastChange(new Date())
+                .lastChange(now())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
                 .convertible(false)
@@ -58,7 +59,7 @@ public class BaseDomainTest {
         FileInfo fileInfo3 = FileInfo.builder()
                 .name("Title3")
                 .path("some/path/file3.avi")
-                .lastChange(new Date())
+                .lastChange(now())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
                 .convertible(true)
@@ -68,7 +69,7 @@ public class BaseDomainTest {
         FileInfo fileInfo4 = FileInfo.builder()
                 .name("Title4")
                 .path("some/path/file4.avi")
-                .lastChange(new Date())
+                .lastChange(now())
                 .videoFormat("AVI")
                 .audioFormat("OGG")
                 .convertible(false)
