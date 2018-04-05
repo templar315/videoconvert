@@ -25,11 +25,10 @@ public class FileInfoService {
     private final String LOCAL_DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
 
     private FileInfoDTO toDTO(FileInfo fileInfo) {
-        FileInfoDTO fileInfoDTO = null;
         if (fileInfo != null) {
             String lastChangeStr = fileInfo.getLastChange()
                         .format(DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_PATTERN));
-            fileInfoDTO = FileInfoDTO.builder()
+            return FileInfoDTO.builder()
                 .id(fileInfo.getId())
                 .name(fileInfo.getName())
                 .path(fileInfo.getPath())
@@ -40,16 +39,15 @@ public class FileInfoService {
                 .user(fileInfo.getUser().getId())
                 .build();
         }
-        return fileInfoDTO;
+        return null;
     }
 
     private FileInfo fromDTO(FileInfoDTO fileInfoDTO) {
-        FileInfo fileInfo = null;
         if (fileInfoDTO != null) {
             LocalDateTime lastChange = LocalDateTime.parse(
                     fileInfoDTO.getLastChange(),
                     DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_PATTERN));
-            fileInfo = FileInfo.builder()
+            return FileInfo.builder()
                     .id(fileInfoDTO.getId())
                     .name(fileInfoDTO.getName())
                     .path(fileInfoDTO.getPath())
@@ -57,53 +55,53 @@ public class FileInfoService {
                     .videoFormat(fileInfoDTO.getVideoFormat())
                     .audioFormat(fileInfoDTO.getAudioFormat())
                     .convertible(fileInfoDTO.isConvertible())
-                    .user(userRepository.getOne(fileInfoDTO.getUser()))
+                    .user(fileInfoDTO.getUser() > 0L
+                            ? userRepository.getOne(fileInfoDTO.getUser())
+                            : null)
                     .build();
         }
-        return fileInfo;
-    }
-
-    public List<FileInfoDTO> findAll() {
-        return fileInfoRepository
-                .findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return null;
     }
 
     @Transactional
     public FileInfoDTO add(FileInfoDTO fileInfoDTO) {
-        FileInfoDTO fileInfoAdded = null;
-        if(fileInfoRepository.existsById(fileInfoDTO.getId())) {
-            fileInfoAdded = toDTO(fileInfoRepository.saveAndFlush(fromDTO(fileInfoDTO)));
+        if(!fileInfoRepository.existsById(fileInfoDTO.getId())) {
+            return toDTO(fileInfoRepository.saveAndFlush(fromDTO(fileInfoDTO)));
         }
-        return fileInfoAdded;
+        return null;
     }
 
     @Transactional
     public FileInfoDTO update(FileInfoDTO fileInfoDTO) {
-        FileInfoDTO fileInfoUpdated = null;
         if (fileInfoRepository.existsById(fileInfoDTO.getId())) {
             FileInfo fileInfoTemp = fileInfoRepository.getOne(fileInfoDTO.getId());
-            FileInfo fileInfoNew = fromDTO(fileInfoDTO);
-            fileInfoTemp = fileInfoTemp.toBuilder()
-                    .name(fileInfoNew.getName())
-                    .path(fileInfoNew.getPath())
-                    .lastChange(fileInfoNew.getLastChange())
-                    .videoFormat(fileInfoNew.getVideoFormat())
-                    .audioFormat(fileInfoNew.getAudioFormat())
-                    .convertible(fileInfoNew.isConvertible())
-                    .user(fileInfoNew.getUser())
-                    .build();
-
-            fileInfoUpdated = toDTO(fileInfoRepository.saveAndFlush(fileInfoTemp));
+            fileInfoTemp.setName(fileInfoDTO.getName());
+            fileInfoTemp.setPath(fileInfoDTO.getPath());
+            fileInfoTemp.setLastChange(LocalDateTime.parse(
+                    fileInfoDTO.getLastChange(),
+                    DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_PATTERN)));
+            fileInfoTemp.setVideoFormat(fileInfoDTO.getVideoFormat());
+            fileInfoTemp.setAudioFormat(fileInfoDTO.getAudioFormat());
+            fileInfoTemp.setConvertible(fileInfoDTO.isConvertible());
+            return toDTO(fileInfoRepository.saveAndFlush(fileInfoTemp));
         }
-        return fileInfoUpdated;
+        return null;
     }
 
     @Transactional
     public void delete(long id) {
         fileInfoRepository.deleteById(id);
+    }
+
+    public List<FileInfoDTO> getAllById(List<Long> idList) {
+        if(idList != null) {
+            return fileInfoRepository
+                    .findAllById(idList)
+                    .stream()
+                    .map(this::toDTO)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
 }
