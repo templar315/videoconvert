@@ -5,6 +5,8 @@ import com.satrumroom.domain.FileInfo;
 import com.satrumroom.domain.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +22,7 @@ public class FileInfoRepositoryTest extends BaseDomain {
 
     @Autowired
     private FileInfoRepository fileInfoRepository;
+
 
     @Test
     public void add() {

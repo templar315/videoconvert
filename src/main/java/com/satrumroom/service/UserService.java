@@ -52,11 +52,16 @@ public class UserService {
         }
         return null;
     }
-
     @Transactional
     public UserDTO add(UserDTO userDTO) {
         if(!userRepository.existsById(userDTO.getId())) {
-            return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
+            String role = userDTO.getRole();
+            if(role != null) {
+                if(role.equals("ADMIN") || role.equals("USER"))
+                {
+                    return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
+                }
+            }
         }
         return null;
     }
@@ -67,13 +72,9 @@ public class UserService {
             User userTemp = userRepository.getOne(userDTO.getId());
             userTemp.setLogin(userDTO.getLogin());
             userTemp.setPassword(userDTO.getPassword());
-            userTemp.setRole(userDTO.getRole());
-            userTemp.setFilesInfo(userDTO.getFilesInfo() != null
-                    ? fileInfoRepository.findAllById(userDTO.getFilesInfo())
-                    : null);
             return toDTO(userRepository.saveAndFlush(userTemp));
         }
-       return null;
+        return null;
     }
 
     @Transactional
