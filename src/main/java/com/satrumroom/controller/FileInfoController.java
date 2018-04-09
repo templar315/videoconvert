@@ -1,5 +1,7 @@
 package com.satrumroom.controller;
 
+import com.satrumroom.dto.FileInfoDTO;
+import com.satrumroom.service.FileInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,13 +18,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FileInfoController {
+
+    private final FileInfoService fileInfoService;
 
     private static String UPLOADED_FOLDER = "D:\\StudyProjects\\videoconvert\\src\\main\\webapp\\resources\\uploads\\";
 
@@ -34,25 +35,37 @@ public class FileInfoController {
     @PostMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
-        if (file.isEmpty()) {
+
+        long userId = 1; //костыль
+
+//        if (file.isEmpty()) {
+//            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+//            return "redirect:uploadStatus";
+//        }
+//
+//        try {
+//
+//            byte[] bytes = file.getBytes();
+//            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+//            Files.write(path, bytes);
+//
+//            redirectAttributes.addFlashAttribute("message",
+//                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        FileInfoDTO uploadedFile = fileInfoService.upload(userId, file);
+
+        if (uploadedFile == null) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
-        }
-
-        try {
-
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
-            Files.write(path, bytes);
-
+        } else {
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
         return "redirect:uploadStatus";
+
     }
 
     @GetMapping("/uploadStatus")
