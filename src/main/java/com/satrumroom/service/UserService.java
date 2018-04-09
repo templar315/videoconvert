@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +22,9 @@ public class UserService {
 
     private final FileInfoRepository fileInfoRepository;
 
-    private UserDTO toDTO(User user) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserDTO toDTO(User user) {
         if (user != null) {
             return UserDTO.builder()
                     .id(user.getId())
@@ -30,15 +33,15 @@ public class UserService {
                     .role(user.getRole())
                     .filesInfo(user.getFilesInfo() != null
                             ? user.getFilesInfo().stream()
-                                    .map(FileInfo::getId)
-                                    .collect(Collectors.toList())
+                            .map(FileInfo::getId)
+                            .collect(Collectors.toList())
                             : null)
                     .build();
         }
         return null;
     }
 
-    private User fromDTO(UserDTO userDTO) {
+    public User fromDTO(UserDTO userDTO) {
         if (userDTO != null) {
             return User.builder()
                     .id(userDTO.getId())
@@ -52,13 +55,17 @@ public class UserService {
         }
         return null;
     }
+
     @Transactional
     public UserDTO add(UserDTO userDTO) {
-        if(!userRepository.existsById(userDTO.getId())) {
+        if (!userRepository.existsById(userDTO.getId())) {
             String role = userDTO.getRole();
-            if(role != null) {
-                if(role.equals("ADMIN") || role.equals("USER"))
-                {
+            if (role != null) {
+                if (role.equals("ADMIN")) {
+                    userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+                    return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
+                }
+                if (role.equals("USER")) {
                     return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
                 }
             }
@@ -94,14 +101,14 @@ public class UserService {
     }
 
     public UserDTO findByLogin(String login) {
-        if(login != null) {
+        if (login != null) {
             return toDTO(userRepository.findByLogin(login));
         }
         return null;
     }
 
     public List<UserDTO> findAllByRole(String role) {
-        if(role != null) {
+        if (role != null) {
             return userRepository.findAllByRole(role)
                     .stream()
                     .map(this::toDTO)

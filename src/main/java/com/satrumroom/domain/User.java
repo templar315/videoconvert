@@ -3,6 +3,7 @@ package com.satrumroom.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.List;
 
@@ -23,9 +24,12 @@ public class User implements Serializable {
     private long id;
 
     @Column(name = "login", nullable = false, unique = true)
+    @NotEmpty(message = "*Please provide your login")
     private String login;
 
     @Column(name = "password", nullable = false)
+    @NotEmpty(message = "*Please provide your password")
+    @Transient
     private String password;
 
     @Column(name = "role", nullable = false)
