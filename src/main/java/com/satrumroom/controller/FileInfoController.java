@@ -14,18 +14,14 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URLEncoder;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;
-
-    private static String UPLOADED_FOLDER = "D:\\StudyProjects\\videoconvert\\src\\main\\webapp\\resources\\uploads\\";
 
     @GetMapping("/")
     public String index() {
@@ -37,24 +33,6 @@ public class FileInfoController {
                                    RedirectAttributes redirectAttributes) {
 
         long userId = 1; //костыль
-
-//        if (file.isEmpty()) {
-//            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-//            return "redirect:uploadStatus";
-//        }
-//
-//        try {
-//
-//            byte[] bytes = file.getBytes();
-//            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
-//            Files.write(path, bytes);
-//
-//            redirectAttributes.addFlashAttribute("message",
-//                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         FileInfoDTO uploadedFile = fileInfoService.upload(userId, file);
 
@@ -73,12 +51,20 @@ public class FileInfoController {
         return "uploadStatus";
     }
 
-    @GetMapping(value = "/download/{fileName}")
+    @GetMapping(value = "/download/{id}/{fileName}")
     public StreamingResponseBody download(HttpServletResponse response,
+                                          @PathVariable(value = "id") long userId,
                                           @PathVariable(value = "fileName") String fileName) throws IOException {
-        response.setContentType("video/mp4");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + ".mp4" + "\"");
-        InputStream inputStream = new FileInputStream(new File(UPLOADED_FOLDER.concat(fileName + ".mp4")));
+
+
+        response.setContentType("video/mp4; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        response.setHeader("Content-Disposition", "attachment; filename=\""
+                + fileName + ".mp4\"");
+
+        InputStream inputStream = new FileInputStream(
+                new File((fileInfoService.UPLOADED_FOLDER + userId + "/" + fileName + ".mp4")));
         return outputStream -> {
             int nRead;
             byte[] data = new byte[1024];
@@ -88,4 +74,5 @@ public class FileInfoController {
             }
         };
     }
+
 }

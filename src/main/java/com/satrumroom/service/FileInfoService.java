@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FileInfoService {
 
-    private final String UPLOADED_FOLDER = "./userfiles/";
+    public final String UPLOADED_FOLDER = "./userfiles/";
 
     private final List<String> FILE_EXTENSIONS = Arrays.asList(
             "wmv", "wmp", "wm", "asf", "smk", "bik", "fli", "flc", "flic",
