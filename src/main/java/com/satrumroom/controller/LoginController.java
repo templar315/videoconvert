@@ -43,7 +43,7 @@ public class LoginController {
     @PostMapping(value = "/registration")
     public ModelAndView createNewUser(@Valid UserDTO user, BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView();
-        User userExists = userRepository.findByLogin(user.getLogin());
+        UserDTO userExists = userService.toDTO(userRepository.findByLogin(user.getLogin()));
         if (userExists != null) {
             bindingResult
                     .rejectValue("login", "error.user",
