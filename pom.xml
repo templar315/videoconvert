@@ -6,7 +6,7 @@
 	<groupId>com.satrumroom</groupId>
 	<artifactId>videoconvert</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>videoconvert</name>
 	<description>Video Convert</description>
