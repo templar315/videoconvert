@@ -9,5 +9,8 @@
         <module name="videoconvert" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="videoconvert" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

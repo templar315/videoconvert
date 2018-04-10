@@ -24,7 +24,7 @@ public class UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserDTO toDTO(User user) {
+    private UserDTO toDTO(User user) {
         if (user != null) {
             return UserDTO.builder()
                     .id(user.getId())
@@ -41,7 +41,7 @@ public class UserService {
         return null;
     }
 
-    public User fromDTO(UserDTO userDTO) {
+    private User fromDTO(UserDTO userDTO) {
         if (userDTO != null) {
             return User.builder()
                     .id(userDTO.getId())
@@ -59,14 +59,18 @@ public class UserService {
     @Transactional
     public UserDTO add(UserDTO userDTO) {
         if (!userRepository.existsById(userDTO.getId())) {
+            String login = userDTO.getLogin();
+            String password = userDTO.getPassword();
             String role = userDTO.getRole();
-            if (role != null) {
-                if (role.equals("ADMIN")) {
+            if(login != null && password != null && role != null) {
+                if(login.length() > 0 && password.length() > 0) {
                     userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
-                    return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
-                }
-                if (role.equals("USER")) {
-                    return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
+                    if (role.equals("ADMIN")) {
+                        return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
+                    }
+                    if (role.equals("USER")) {
+                        return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
+                    }
                 }
             }
         }

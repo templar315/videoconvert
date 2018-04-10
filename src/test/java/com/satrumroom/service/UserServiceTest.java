@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
@@ -32,13 +31,14 @@ public class UserServiceTest extends BaseDomain {
         assertThat(userService.getAll()).hasSize(3);
     }
 
-    @Test(expected = DataIntegrityViolationException.class)
+    @Test()
     public void createNotValidUser() {
         userService.add(UserDTO.builder()
                 .login("loginThree")
+                .password(null)
                 .role("ADMIN")
                 .build());
-        assertThat(userService.getAll()).hasSize(3);
+        assertThat(userService.getAll()).hasSize(2);
     }
 
     @Test

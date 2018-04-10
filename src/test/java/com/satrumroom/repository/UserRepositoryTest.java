@@ -5,7 +5,6 @@ import com.satrumroom.domain.FileInfo;
 import com.satrumroom.domain.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +33,7 @@ public class UserRepositoryTest extends BaseDomain {
         assertThat(userRepository.findAll()).hasSize(3);
     }
 
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    @Test(expected = javax.validation.ConstraintViolationException.class)
     public void createNotValidUser() {
         userRepository.saveAndFlush(User.builder()
                 .login("loginThree")

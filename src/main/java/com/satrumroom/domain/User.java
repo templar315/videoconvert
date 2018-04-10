@@ -29,7 +29,6 @@ public class User implements Serializable {
 
     @Column(name = "password", nullable = false)
     @NotEmpty(message = "*Please provide your password")
-    @Transient
     private String password;
 
     @Column(name = "role", nullable = false)

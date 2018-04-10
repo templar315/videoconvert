@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -109,7 +109,10 @@ public class FileInfoService {
 
     @Transactional
     public void delete(long id) {
-        fileInfoRepository.deleteById(id);
+        if(fileInfoRepository.existsById(id)) {
+            new File(fileInfoRepository.getOne(id).getPath()).delete();
+            fileInfoRepository.deleteById(id);
+        }
     }
 
     public List<FileInfoDTO> getAllById(List<Long> idList) {
@@ -145,7 +148,7 @@ public class FileInfoService {
 
             File dir = new File(UPLOADED_FOLDER + userId);
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
 
             byte[] bytes = file.getBytes();
@@ -153,18 +156,15 @@ public class FileInfoService {
                     + "/" + file.getOriginalFilename());
             Files.write(path, bytes);
 
-            // тут должна быть проверка уже загруженного файла
-            // с помощью ffmpeg, что он действительно 'video',
-            // а также выделение информации о видео и аудиоформате
-
             uploadedFile = FileInfoDTO.builder()
-                    .name("")
-                    .path("")
+                    .name(file.getOriginalFilename())
+                    .path(UPLOADED_FOLDER + userId
+                            + "/" + file.getOriginalFilename())
                     .lastChange(LocalDateTime.now()
                             .format(DateTimeFormatter
                                     .ofPattern(LOCAL_DATE_TIME_PATTERN)))
-                    .videoFormat("unknown") // сюда вписать обнаруженный видеоформат
-                    .audioFormat("unknown") // сюда вписать обнаруженный аудиоформат
+                    .videoFormat("unknown")
+                    .audioFormat("unknown")
                     .convertible(true)
                     .user(userId)
                     .build();
