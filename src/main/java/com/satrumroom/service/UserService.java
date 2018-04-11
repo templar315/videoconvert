@@ -11,12 +11,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserService {
+
+    private final FileInfoService fileInfoService;
 
     private final UserRepository userRepository;
 
@@ -62,8 +65,8 @@ public class UserService {
             String login = userDTO.getLogin();
             String password = userDTO.getPassword();
             String role = userDTO.getRole();
-            if(login != null && password != null && role != null) {
-                if(login.length() > 0 && password.length() > 0) {
+            if (login != null && password != null && role != null) {
+                if (login.length() > 0 && password.length() > 0) {
                     userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
                     if (role.equals("ADMIN")) {
                         return toDTO(userRepository.saveAndFlush(fromDTO(userDTO)));
@@ -90,7 +93,22 @@ public class UserService {
 
     @Transactional
     public void delete(long id) {
-        userRepository.deleteById(id);
+        if (userRepository.existsById(id)) {
+            List<FileInfo> allUserFiles =
+                    userRepository.getOne(id).getFilesInfo();
+            if (allUserFiles.size() > 0) {
+                for (FileInfo fileInfo : allUserFiles) {
+                    if (new File(fileInfo.getPath()).delete()) {
+                        fileInfoRepository.deleteById(fileInfo.getId());
+                    } else {
+                        return;
+                    }
+                }
+            }
+            // вообще-то когда if-ов больше двух, считается 'говнокод'
+            new File(fileInfoService.UPLOADED_FOLDER + id).delete();
+            userRepository.deleteById(id);
+        }
     }
 
     public UserDTO getOne(long id) {

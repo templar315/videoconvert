@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -54,7 +55,7 @@ public class FileInfoController {
 
             FileInfoDTO fileInfo = fileInfoService.getOne(fileId);
             String fileName = fileInfo.getName();
-            String extension = fileName.split("\\.")[1];
+            String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
             response.setContentType("video/" + extension + "; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             response.setHeader("Content-Disposition", "attachment; filename=\""
@@ -68,6 +69,8 @@ public class FileInfoController {
                 while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
                     outputStream.write(data, 0, nRead);
                 }
+                inputStream.close();
+                outputStream.close();
             };
         } catch(Exception ex){
             return null;

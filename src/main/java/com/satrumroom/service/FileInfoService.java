@@ -35,7 +35,8 @@ public class FileInfoService {
             "ssif", "vob", "ifo", "mkv", "mk3d", "webm",
             "mp4", "m4v", "mp4v", "hdmov",
             "mov", "3gp", "3gpp", "3ga", "3g2", "flv", "f4v", "ogm", "ogv",
-            "rm", "rmvb", "rt", "ram", "rpm", "rmm", "rp", "smi", "smil");
+            "rm", "rmvb", "rt", "ram", "rpm", "rmm", "rp", "smi", "smil",
+            "mp3");
 
     private final FileInfoRepository fileInfoRepository;
 
@@ -110,8 +111,9 @@ public class FileInfoService {
     @Transactional
     public void delete(long id) {
         if(fileInfoRepository.existsById(id)) {
-            new File(fileInfoRepository.getOne(id).getPath()).delete();
-            fileInfoRepository.deleteById(id);
+            if(new File(fileInfoRepository.getOne(id).getPath()).delete()) {
+                fileInfoRepository.deleteById(id);
+            }
         }
     }
 
@@ -129,20 +131,30 @@ public class FileInfoService {
     public FileInfoDTO upload (long userId, MultipartFile file) {
 
         FileInfoDTO uploadedFile = null;
+        String originalFileName = file.getOriginalFilename();
 
         if (file.isEmpty()) {
             return null;
         }
 
-        File checkFile = new File(UPLOADED_FOLDER + userId
-                + "/" + file.getOriginalFilename());
-        if (checkFile.exists()) {
+        int index = originalFileName.lastIndexOf(".");
+        String name = originalFileName.substring(0, index);
+        String extension = originalFileName.substring(index + 1);
+
+        if (!FILE_EXTENSIONS.contains(extension)) {
             return null;
         }
 
-        if (!FILE_EXTENSIONS.contains(file.getOriginalFilename().split("\\.")[1])) {
-            return null;
+        File checkFile = new File(UPLOADED_FOLDER + userId
+                + "/" + originalFileName);
+        int i = 0;
+        while (checkFile.exists()) {
+            i++;
+            originalFileName = name + "(" + i + ")." + extension;
+            checkFile = new File(UPLOADED_FOLDER + userId
+                    + "/" + originalFileName);
         }
+
 
         try {
 
@@ -153,13 +165,13 @@ public class FileInfoService {
 
             byte[] bytes = file.getBytes();
             Path path = Paths.get(UPLOADED_FOLDER + userId
-                    + "/" + file.getOriginalFilename());
+                    + "/" + originalFileName);
             Files.write(path, bytes);
 
             uploadedFile = FileInfoDTO.builder()
-                    .name(file.getOriginalFilename())
+                    .name(originalFileName)
                     .path(UPLOADED_FOLDER + userId
-                            + "/" + file.getOriginalFilename())
+                            + "/" + originalFileName)
                     .lastChange(LocalDateTime.now()
                             .format(DateTimeFormatter
                                     .ofPattern(LOCAL_DATE_TIME_PATTERN)))
