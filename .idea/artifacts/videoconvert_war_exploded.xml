@@ -81,7 +81,7 @@
           <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-annotations-api:8.5.28" />
           <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:8.5.28" />
           <element id="library" level="project" name="Maven: org.eclipse.jdt:ecj:3.12.3" />
-          <element id="library" level="project" name="Maven: org.webjars.bower:jquery:unknown" />
+          <element id="library" level="project" name="Maven: org.webjars.bower:jquery:3.2.1" />
         </element>
       </element>
       <element id="directory" name="META-INF">
