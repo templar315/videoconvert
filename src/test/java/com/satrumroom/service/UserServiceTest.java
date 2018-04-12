@@ -2,11 +2,9 @@ package com.satrumroom.service;
 
 import com.satrumroom.BaseDomain;
 import com.satrumroom.dto.UserDTO;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 
@@ -83,23 +81,8 @@ public class UserServiceTest extends BaseDomain {
     }
 
     @Test
-    public void delete() {
-        int initSize = userService.getAll().size();
-        userService.delete(userService.getAll().get(0).getId());
-        int finalSize = userService.getAll().size();
-        assertThat(initSize).isGreaterThan(finalSize);
-    }
-
-    @Test
     public void getAll() {
         assertThat(userService.getAll()).hasSize(2);
-    }
-
-    @Test(expected = EmptyResultDataAccessException.class)
-    public void deleteNotExistsUser() {
-        Assertions.assertThat(userService.getAll()).hasSize(2);
-        userService.delete(111111L);
-        Assertions.assertThat(userService.getAll()).hasSize(2);
     }
 
 }

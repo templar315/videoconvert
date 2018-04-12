@@ -105,7 +105,6 @@ public class UserService {
                     }
                 }
             }
-            // вообще-то когда if-ов больше двух, считается 'говнокод'
             new File(fileInfoService.UPLOADED_FOLDER + id).delete();
             userRepository.deleteById(id);
         }
